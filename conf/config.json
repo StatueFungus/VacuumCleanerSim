@@ -1,0 +1,13 @@
+{
+  "environment": {
+    "tile_size": 10,
+    "width": 80,
+    "height": 60
+  },
+  "simulation": {
+    "fps": 30
+  },
+  "logging": {
+    "verbose": true
+  }
+}
