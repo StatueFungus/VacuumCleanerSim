@@ -10,10 +10,12 @@ from Visualizer import Visualizer
 from utils.confUtils import CONF as conf
 from utils.confUtils import LOG as log
 
+
 class Runmode(Enum):
     # should be enumtype
     BUILD = 1
     SIM = 2
+
 
 class VacuumCleanerSim:
     def __init__(self):
@@ -37,10 +39,10 @@ class VacuumCleanerSim:
 
             new_events = []
             if self.run_mode == Runmode.BUILD:
+                self.visualizer.update(pygame_events=pygame_events)
                 new_rectangles = self.visualizer.get_updates()
                 for rect in new_rectangles:
-                    if self.environment.add_obstacle(
-                            rect):  # prüft, ob das Hindernis gesetzt werden kann, oder ob der Roboter gerade an der Position steht
+                    if self.environment.add_obstacle(rect):  # prüft, ob das Hindernis gesetzt werden kann, oder ob der Roboter gerade an der Position steht
                         new_events.append(rect)
 
                 pass
@@ -73,5 +75,3 @@ class VacuumCleanerSim:
 
 if __name__ == '__main__':
     VacuumCleanerSim().start_simulation()
-
-

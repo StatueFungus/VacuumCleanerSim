@@ -1,8 +1,8 @@
 {
   "environment": {
     "tile_size": 10,
-    "width": 80,
-    "height": 60
+    "width": 800,
+    "height": 600
   },
   "simulation": {
     "fps": 30
