@@ -64,6 +64,9 @@ class VacuumCleanerSim:
         for event in events:
             if event.type == pygame.QUIT:
                 sys.exit()
+            if event.type == KEYDOWN and event.key == K_c:
+                log.error("Clear obstacles")
+                self.environment.clear_obstacles()
             if event.type == KEYDOWN and event.key == K_m:
                 if self.run_mode == Runmode.BUILD:  # it is not possible to switch from sim to build mode
                     self.run_mode = Runmode.SIM
