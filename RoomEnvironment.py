@@ -23,9 +23,7 @@ class RoomEnvironment():
                                self.height - 2 * self.tile_size))
 
     def add_obstacle(self, rect):
-        # TODO test if rect colides with robot
         self.obstacles.append(rect)
-        return True
 
     def get_params(self):
         return self.width, self.height, self.tile_size

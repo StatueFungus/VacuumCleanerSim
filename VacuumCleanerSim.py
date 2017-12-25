@@ -7,14 +7,10 @@ from pygame.locals import *
 
 from RoomEnvironment import RoomEnvironment
 from Visualizer import Visualizer
+from algorithm.AbstractCleaningAlgorithm import BaseCleaningAlgorithm
+from utils.Runmode import Runmode
 from utils.confUtils import CONF as conf
 from utils.confUtils import LOG as log
-
-
-class Runmode(Enum):
-    # should be enumtype
-    BUILD = 1
-    SIM = 2
 
 
 class VacuumCleanerSim:
@@ -29,6 +25,7 @@ class VacuumCleanerSim:
         self.clock = pygame.time.Clock()
         self.environment = RoomEnvironment(env_conf["width"], env_conf["height"], tile_size)
         self.visualizer = Visualizer(self.environment)
+        self.algorithm = BaseCleaningAlgorithm()
 
     def start_simulation(self):
         log.error("Start simulation")
@@ -39,24 +36,28 @@ class VacuumCleanerSim:
 
             new_events = []
             if self.run_mode == Runmode.BUILD:
-                self.visualizer.update(pygame_events=pygame_events)
-                new_rectangles = self.visualizer.get_updates()
-                for rect in new_rectangles:
-                    if self.environment.add_obstacle(rect):  # prüft, ob das Hindernis gesetzt werden kann, oder ob der Roboter gerade an der Position steht
-                        new_events.append(rect)
+                self.visualizer.update(pygame_events=pygame_events, env=self.environment)
+                new_obstacle_event = self.visualizer.get_obstacle_added_event()
 
-                pass
+                # TODO environment should clip the added obstacle
+                if new_obstacle_event is not None:
+                    if self.environment.add_obstacle(new_obstacle_event.new_obstacle):
+                        new_events.append(new_obstacle_event)
+
             elif self.run_mode == Runmode.SIM:
-                configuration_events = []
-                # configuration_events = self.algorithm.update(environment)
+                # get configuration change events from algorithm. It does not affect the environment directly
+                configuration_events = self.algorithm.update(self.environment)
                 new_events.append(configuration_events)
 
+                # apply configuration change event to the environment
+                # and retrieve environment changes like covered tiles
                 environment_events = self.environment.update(configuration_events)
                 new_events.append(environment_events)
 
+                # update the visualizer with all new events
                 self.visualizer.update(new_events)
-                pass
 
+            # save all events into the event stream. this could be useful for re-simulating ...
             self.event_stream.append(new_events)
 
     def handle_pygame_events(self, events):
@@ -64,11 +65,10 @@ class VacuumCleanerSim:
             if event.type == pygame.QUIT:
                 sys.exit()
             if event.type == KEYDOWN and event.key == K_m:
-                if self.run_mode == Runmode.BUILD:
+                if self.run_mode == Runmode.BUILD:  # it is not possible to switch from sim to build mode
                     self.run_mode = Runmode.SIM
-                elif self.run_mode == Runmode.SIM:
-                    self.run_mode = Runmode.BUILD
-                log.error("Switched runmode")
+                    self.visualizer.set_run_mode(self.run_mode)
+                log.error("Switched runmode to simulation")
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
                 sys.exit()
 
