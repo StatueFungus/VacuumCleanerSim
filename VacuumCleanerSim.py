@@ -8,6 +8,7 @@ from pygame.locals import *
 from RoomEnvironment import RoomEnvironment
 from Visualizer import Visualizer
 from algorithm.AbstractCleaningAlgorithm import BaseCleaningAlgorithm
+from events.EventType import EventType
 from utils.Runmode import Runmode
 from utils.confUtils import CONF as conf
 from utils.confUtils import LOG as log
@@ -36,28 +37,24 @@ class VacuumCleanerSim:
 
             new_events = []
             if self.run_mode == Runmode.BUILD:
-                obstacle_drawn_event = self.visualizer.get_obstacle_added_event()
-
-                if obstacle_drawn_event is not None:
-                    log.error(obstacle_drawn_event.drawn_obstacle)
-                    obstacle_added_event = self.environment.update(obstacle_drawn_event)
-                    if obstacle_added_event is not None:
-                        new_events.append(obstacle_added_event)
+                draw_events = self.visualizer.get_draw_events()
+                env_events = self.environment.update(draw_events)
+                new_events.extend(env_events)
 
                 self.visualizer.update(pygame_events=pygame_events, sim_events=new_events)
 
             elif self.run_mode == Runmode.SIM:
                 # get configuration change events from algorithm. It does not affect the environment directly
                 configuration_events = self.algorithm.update(self.environment)
-                new_events.append(configuration_events)
+                new_events.extend(configuration_events)
 
                 # apply configuration change event to the environment
                 # and retrieve environment changes like covered tiles
                 environment_events = self.environment.update(configuration_events)
-                new_events.append(environment_events)
+                new_events.extend(environment_events)
 
                 # update the visualizer with all new events
-                self.visualizer.update(new_events)
+                self.visualizer.update(sim_events=new_events)
 
             # save all events into the event stream. this could be useful for re-simulating ...
             self.event_stream.append(new_events)

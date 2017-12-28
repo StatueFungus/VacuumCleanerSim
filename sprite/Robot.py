@@ -1,10 +1,10 @@
 import pygame
 
-from utils.colorUtils import GREEN
+from utils.colorUtils import GREEN, BLACK
 
 
 class Robot(pygame.sprite.Sprite):
-    def __init__(self, x, y, diameter, color):
+    def __init__(self, x, y, diameter, color=BLACK):
         super().__init__()
         self.image = pygame.Surface([diameter * 2, diameter * 2], pygame.SRCALPHA)
         pygame.draw.circle(self.image, color, (diameter, diameter), diameter)

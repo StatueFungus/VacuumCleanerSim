@@ -11,4 +11,4 @@ class AbstractCleaningAlgorithm(ABC):
 class BaseCleaningAlgorithm(AbstractCleaningAlgorithm):
 
     def update(self, env):
-        pass
+        return []

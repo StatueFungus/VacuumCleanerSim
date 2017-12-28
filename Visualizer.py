@@ -3,6 +3,7 @@ from pygame.locals import *
 
 from events.EventType import EventType
 from events.ObstacleDrawn import ObstacleDrawn
+from events.RobotDrawn import RobotDrawn
 from utils.Runmode import Runmode
 from utils.colorUtils import *
 from utils.confUtils import LOG as log
@@ -25,6 +26,9 @@ class Visualizer:
         self.tile_group = pygame.sprite.Group()
         # self.tile_group.add(env.tiles)
 
+        self.robot = None
+        self.robot_group = pygame.sprite.Group()
+
         self.wall_group = pygame.sprite.Group()
         self.wall_group.add(env.walls)
 
@@ -37,6 +41,9 @@ class Visualizer:
         self.temp_rectangle = None
         self.new_rectangle = None
 
+        # --- Temp robot tuple ---
+        self.temp_robot = None
+
     def update(self, sim_events=None, pygame_events=None):
         if sim_events is not None and len(sim_events) != 0:
             self.handle_sim_events(sim_events)
@@ -45,16 +52,13 @@ class Visualizer:
 
         self.draw()
 
-    def handle_sim_events(self, events):
-        for event in events:
-            if event.type == EventType.OBSTACLE_ADDED:
-                log.error("Add Obstacle")
-                self.obstacle_group.add(event.new_obstacle)
-            if event.type == EventType.TILE_COVERED:
-                self.tile_group.add(event.tile)
-
     def handle_pygame_events(self, events):
         for event in events:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_r:
+                    x, y = pygame.mouse.get_pos()
+                    diameter = conf["robot"]["diameter"]
+                    self.temp_robot = (x, y, diameter)
             if event.type == pygame.MOUSEBUTTONDOWN:
                 log.error("mouse down")
                 self.mouse_down = True
@@ -66,13 +70,30 @@ class Visualizer:
                 self.start_point = None
                 self.temp_rectangle = None
 
-    def get_obstacle_added_event(self):
+    def handle_sim_events(self, events):
+        for event in events:
+            if event.type == EventType.OBSTACLE_ADDED:
+                log.error("Add Obstacle")
+                self.obstacle_group.add(event.new_obstacle)
+            if event.type == EventType.ROBOT_PLACED:
+                log.error("Robot placed")
+                self.robot_group.add(event.placed_robot)
+            if event.type == EventType.TILE_COVERED:
+                self.tile_group.add(event.tile)
+
+    def get_draw_events(self):
+        events = []
+
         if self.new_rectangle is not None:
             ret = self.new_rectangle
             self.new_rectangle = None
-            return ObstacleDrawn(ret)
+            events.append(ObstacleDrawn(ret))
 
-        return None
+        if self.temp_robot is not None:
+            events.append(RobotDrawn(self.temp_robot))
+            self.temp_robot = None
+
+        return events
 
     def draw_temp_rectangle(self):
         if self.mouse_down:
@@ -99,10 +120,12 @@ class Visualizer:
         self.tile_group.update()
         self.wall_group.update()
         self.obstacle_group.update()
+        self.robot_group.update()
 
         self.tile_group.draw(self.screen)
         self.wall_group.draw(self.screen)
         self.obstacle_group.draw(self.screen)
+        self.robot_group.draw(self.screen)
 
         self.draw_temp_rectangle()
         self.draw_fps()

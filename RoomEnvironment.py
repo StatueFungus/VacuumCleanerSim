@@ -1,6 +1,8 @@
 from events.EventType import EventType
 from events.ObstacleAdded import ObstacleAdded
+from events.RobotPlaced import RobotPlaced
 from sprite.Obstacle import Obstacle
+from sprite.Robot import Robot
 from utils.colorUtils import GREEN
 
 
@@ -16,9 +18,17 @@ class RoomEnvironment:
 
         self.initialize_walls()
 
-    def update(self, event):
-        if event.type == EventType.OBSTACLE_DRAWN:
-            return self.handle_drawn_obstacle(event.drawn_obstacle)
+    def update(self, events):
+        new_events = []
+
+        for event in events:
+            if event is not None:
+                if event.type == EventType.OBSTACLE_DRAWN:
+                    new_events.append(self.handle_drawn_obstacle(event.drawn_obstacle))
+                if event.type == EventType.ROBOT_DRAWN:
+                    new_events.append(self.handle_drawn_robot(event.drawn_robot))
+
+        return new_events
 
     def initialize_walls(self):
         self.walls.append(Obstacle(0, 0, self.width, self.tile_size))
@@ -66,3 +76,15 @@ class RoomEnvironment:
         # return ObstacleAdded event with clipped obstacle
         new_obstacle = Obstacle(x, y, width, height, GREEN)
         return ObstacleAdded(new_obstacle)
+
+    def handle_drawn_robot(self, robot):
+        x, y, diameter = robot[0], robot[1], robot[2]
+
+        if self.robot is not None:
+            self.robot.rect.x = x
+            self.robot.rect.y = y
+            return RobotPlaced(self.robot)
+
+        new_robot = Robot(x, y, diameter)
+        self.robot = new_robot
+        return RobotPlaced(new_robot)
