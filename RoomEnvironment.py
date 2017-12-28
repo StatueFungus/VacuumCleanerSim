@@ -87,6 +87,7 @@ class RoomEnvironment:
     def handle_drawn_robot(self, robot):
         x, y, diameter = robot[0], robot[1], robot[2]
 
+        print(x,y)
         # TODO check for collision when placing
         if self.robot is not None:
             self.robot.rect.x = x
@@ -98,4 +99,4 @@ class RoomEnvironment:
         return RobotPlaced(new_robot)
 
     def handle_configuration_changed(self, event):
-        self.robot.set_configuration(event.new_c)
+        self.robot.set_configuration(event)

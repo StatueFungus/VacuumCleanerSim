@@ -1,11 +1,16 @@
-from abc import ABC, abstractmethod
+from abc import ABC
+
+from sprite.Robot import RobotState
 
 
 class AbstractCleaningAlgorithm(ABC):
+    def __init__(self):
+        self.started = False
 
-    @abstractmethod
     def update(self, obstacles, robot):
-        pass
+        if not self.started:
+            self.start()
+            robot.state = RobotState.WALK
 
     def robot_colided(self, obstacles, robot):
         for obstacle in obstacles:
@@ -13,3 +18,6 @@ class AbstractCleaningAlgorithm(ABC):
                 return True
 
         return False
+
+    def start(self):
+        self.started = True

@@ -1,16 +1,21 @@
-import numpy
-
 from algorithm.AbstractCleaningAlgorithm import AbstractCleaningAlgorithm
 from events.ConfigurationChanged import ConfigurationChanged
+from sprite.Robot import RobotState
+from random import randint
 
 
 class RandomBounceWalkAlgorithm(AbstractCleaningAlgorithm):
+    def __init__(self):
+        super().__init__()
+
     def update(self, obstacles, robot):
+        super().update(obstacles, robot)
+
         configuration_events = []
 
-        if not self.robot_colided(obstacles, robot):
-            old_c = robot.get_configuration()
-            new_c = numpy.add(old_c, (0, -2, 0))
-            configuration_events.append(ConfigurationChanged(old_c, new_c))
+        if not robot.busy and self.robot_colided(obstacles, robot):
+            new_state = RobotState.WALK_BACKWARDS_THEN_ROTATE
+            delta_angle = randint(0, 360)
+            configuration_events.append(ConfigurationChanged(new_state=new_state, delta_angle=delta_angle))
 
         return configuration_events

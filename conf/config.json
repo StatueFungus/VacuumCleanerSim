@@ -5,7 +5,9 @@
     "height": 600
   },
   "robot":{
-    "diameter": 15
+    "diameter": 30,
+    "wss": 2,
+    "rss": 5
   },
   "simulation": {
     "fps": 45
