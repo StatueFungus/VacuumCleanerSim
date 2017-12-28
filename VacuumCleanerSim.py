@@ -36,13 +36,15 @@ class VacuumCleanerSim:
 
             new_events = []
             if self.run_mode == Runmode.BUILD:
-                self.visualizer.update(pygame_events=pygame_events, env=self.environment)
-                new_obstacle_event = self.visualizer.get_obstacle_added_event()
+                obstacle_drawn_event = self.visualizer.get_obstacle_added_event()
 
-                # TODO environment should clip the added obstacle
-                if new_obstacle_event is not None:
-                    if self.environment.add_obstacle(new_obstacle_event.new_obstacle):
-                        new_events.append(new_obstacle_event)
+                if obstacle_drawn_event is not None:
+                    log.error(obstacle_drawn_event.drawn_obstacle)
+                    obstacle_added_event = self.environment.update(obstacle_drawn_event)
+                    if obstacle_added_event is not None:
+                        new_events.append(obstacle_added_event)
+
+                self.visualizer.update(pygame_events=pygame_events, sim_events=new_events)
 
             elif self.run_mode == Runmode.SIM:
                 # get configuration change events from algorithm. It does not affect the environment directly
@@ -67,6 +69,7 @@ class VacuumCleanerSim:
             if event.type == KEYDOWN and event.key == K_c:
                 log.error("Clear obstacles")
                 self.environment.clear_obstacles()
+                self.visualizer.clean_obstacles()
             if event.type == KEYDOWN and event.key == K_m:
                 if self.run_mode == Runmode.BUILD:  # it is not possible to switch from sim to build mode
                     self.run_mode = Runmode.SIM

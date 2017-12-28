@@ -4,6 +4,9 @@
     "width": 800,
     "height": 600
   },
+  "robot":{
+    "diameter": 15
+  },
   "simulation": {
     "fps": 30
   },
