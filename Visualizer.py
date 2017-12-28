@@ -15,6 +15,7 @@ class Visualizer:
         pygame.init()
         w, h, _ = env.get_params()
 
+        self.ticks = 0
         self.clock = clock
         self.run_mode = Runmode.BUILD
 
@@ -49,6 +50,9 @@ class Visualizer:
             self.handle_sim_events(sim_events)
         if pygame_events is not None:
             self.handle_pygame_events(pygame_events)
+
+        if self.run_mode == Runmode.SIM:
+            self.ticks = self.ticks + 1
 
         self.draw()
 
@@ -114,6 +118,11 @@ class Visualizer:
             fps = self.font.render("FPS: " + str(int(self.clock.get_fps())), True, RED)
             self.screen.blit(fps, (20, 20))
 
+    def draw_time(self):
+        if conf["debug"]["draw_time"] and self.run_mode == Runmode.SIM:
+            time = self.font.render("Time: " + str(self.ticks), True, RED)
+            self.screen.blit(time, (20, 40))
+
     def draw(self):
         self.screen.fill(WHITE)
 
@@ -129,5 +138,6 @@ class Visualizer:
 
         self.draw_temp_rectangle()
         self.draw_fps()
+        self.draw_time()
 
         pygame.display.flip()

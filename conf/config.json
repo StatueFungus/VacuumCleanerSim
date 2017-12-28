@@ -13,7 +13,9 @@
     "fps": 45
   },
   "debug": {
-    "draw_fps": true
+    "draw_fps": true,
+    "draw_time": true,
+    "draw_coverage": true
   },
   "logging": {
     "verbose": true
