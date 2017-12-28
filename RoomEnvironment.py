@@ -4,6 +4,7 @@ from events.RobotPlaced import RobotPlaced
 from sprite.Obstacle import Obstacle
 from sprite.Robot import Robot
 from utils.colorUtils import GREEN
+from utils.listUtils import filter_none
 
 
 class RoomEnvironment:
@@ -27,8 +28,10 @@ class RoomEnvironment:
                     new_events.append(self.handle_drawn_obstacle(event.drawn_obstacle))
                 if event.type == EventType.ROBOT_DRAWN:
                     new_events.append(self.handle_drawn_robot(event.drawn_robot))
+                if event.type == EventType.CONFIGURATION_CHANGED:
+                    new_events.append(self.handle_configuration_changed(event))
 
-        return new_events
+        return filter_none(new_events)
 
     def initialize_walls(self):
         self.walls.append(Obstacle(0, 0, self.width, self.tile_size))
@@ -51,6 +54,9 @@ class RoomEnvironment:
     def handle_drawn_obstacle(self, obstacle):
         x, y = obstacle[0], obstacle[1]
         width, height = obstacle[2], obstacle[3]
+
+        if width == 0 or height == 0:
+            return None
 
         # clip drawn obstacle on the walls
         if width < 0:
@@ -75,11 +81,13 @@ class RoomEnvironment:
 
         # return ObstacleAdded event with clipped obstacle
         new_obstacle = Obstacle(x, y, width, height, GREEN)
+        self.obstacles.append(new_obstacle)
         return ObstacleAdded(new_obstacle)
 
     def handle_drawn_robot(self, robot):
         x, y, diameter = robot[0], robot[1], robot[2]
 
+        # TODO check for collision when placing
         if self.robot is not None:
             self.robot.rect.x = x
             self.robot.rect.y = y
@@ -88,3 +96,6 @@ class RoomEnvironment:
         new_robot = Robot(x, y, diameter)
         self.robot = new_robot
         return RobotPlaced(new_robot)
+
+    def handle_configuration_changed(self, event):
+        self.robot.set_configuration(event.new_c)

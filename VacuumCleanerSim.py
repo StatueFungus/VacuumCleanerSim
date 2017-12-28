@@ -1,5 +1,3 @@
-from enum import Enum
-
 import pygame
 import sys
 
@@ -7,8 +5,7 @@ from pygame.locals import *
 
 from RoomEnvironment import RoomEnvironment
 from Visualizer import Visualizer
-from algorithm.AbstractCleaningAlgorithm import BaseCleaningAlgorithm
-from events.EventType import EventType
+from algorithm.RandomBounceWalkAlgorithm import RandomBounceWalkAlgorithm
 from utils.Runmode import Runmode
 from utils.confUtils import CONF as conf
 from utils.confUtils import LOG as log
@@ -26,7 +23,7 @@ class VacuumCleanerSim:
         self.clock = pygame.time.Clock()
         self.environment = RoomEnvironment(env_conf["width"], env_conf["height"], tile_size)
         self.visualizer = Visualizer(self.environment, self.clock)
-        self.algorithm = BaseCleaningAlgorithm()
+        self.algorithm = RandomBounceWalkAlgorithm()
 
     def start_simulation(self):
         log.error("Start simulation")
@@ -45,7 +42,7 @@ class VacuumCleanerSim:
 
             elif self.run_mode == Runmode.SIM:
                 # get configuration change events from algorithm. It does not affect the environment directly
-                configuration_events = self.algorithm.update(self.environment)
+                configuration_events = self.algorithm.update(self.environment.obstacles, self.environment.robot)
                 new_events.extend(configuration_events)
 
                 # apply configuration change event to the environment
@@ -71,7 +68,7 @@ class VacuumCleanerSim:
                 if self.run_mode == Runmode.BUILD:  # it is not possible to switch from sim to build mode
                     self.run_mode = Runmode.SIM
                     self.visualizer.set_run_mode(self.run_mode)
-                log.error("Switched runmode to simulation")
+                    log.error("Switched runmode to simulation")
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
                 sys.exit()
 
