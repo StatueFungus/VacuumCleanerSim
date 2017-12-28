@@ -8,7 +8,10 @@
     "diameter": 15
   },
   "simulation": {
-    "fps": 30
+    "fps": 45
+  },
+  "debug": {
+    "draw_fps": true
   },
   "logging": {
     "verbose": true

@@ -24,7 +24,7 @@ class VacuumCleanerSim:
 
         self.clock = pygame.time.Clock()
         self.environment = RoomEnvironment(env_conf["width"], env_conf["height"], tile_size)
-        self.visualizer = Visualizer(self.environment)
+        self.visualizer = Visualizer(self.environment, self.clock)
         self.algorithm = BaseCleaningAlgorithm()
 
     def start_simulation(self):

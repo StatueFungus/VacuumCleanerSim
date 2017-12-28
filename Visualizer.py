@@ -6,17 +6,21 @@ from events.ObstacleDrawn import ObstacleDrawn
 from utils.Runmode import Runmode
 from utils.colorUtils import *
 from utils.confUtils import LOG as log
+from utils.confUtils import CONF as conf
 
 
 class Visualizer:
-    run_mode = Runmode.BUILD
-
-    def __init__(self, env):
+    def __init__(self, env, clock):
         pygame.init()
-        w, h, tile_size = env.get_params()
+        w, h, _ = env.get_params()
+
+        self.clock = clock
+        self.run_mode = Runmode.BUILD
 
         self.screen = pygame.display.set_mode((w, h), DOUBLEBUF)
         self.screen.set_alpha(None)
+
+        self.font = pygame.font.Font(None, 20)
 
         self.tile_group = pygame.sprite.Group()
         # self.tile_group.add(env.tiles)
@@ -84,8 +88,12 @@ class Visualizer:
     def set_run_mode(self, new_run_mode):
         self.run_mode = new_run_mode
 
-    def draw(self):
+    def draw_fps(self):
+        if conf["debug"]["draw_fps"]:
+            fps = self.font.render("FPS: " + str(int(self.clock.get_fps())), True, RED)
+            self.screen.blit(fps, (20, 20))
 
+    def draw(self):
         self.screen.fill(WHITE)
 
         self.tile_group.update()
@@ -97,5 +105,6 @@ class Visualizer:
         self.obstacle_group.draw(self.screen)
 
         self.draw_temp_rectangle()
+        self.draw_fps()
 
         pygame.display.flip()
