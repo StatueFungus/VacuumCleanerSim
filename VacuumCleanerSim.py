@@ -68,6 +68,7 @@ class VacuumCleanerSim:
                 if self.run_mode == Runmode.BUILD:  # it is not possible to switch from sim to build mode
                     self.run_mode = Runmode.SIM
                     self.visualizer.set_run_mode(self.run_mode)
+                    self.visualizer.set_tile_count(self.environment.get_tile_count())
                     log.error("Switched run mode to simulation")
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
                 sys.exit()

@@ -36,6 +36,10 @@ class Visualizer:
         self.obstacle_group = pygame.sprite.Group()
         self.obstacle_group.add(env.obstacles)
 
+        # --- used for statistic --
+        self.tile_count = 0
+        self.covered_tiles = 0
+
         # --- Temp rectangle for placing new rectangles ---
         self.mouse_down = False
         self.start_point = None
@@ -83,6 +87,7 @@ class Visualizer:
                 log.error("Robot placed")
                 self.robot_group.add(event.placed_robot)
             if event.type == EventType.TILE_COVERED:
+                self.covered_tiles = self.covered_tiles + 1
                 self.tile_group.add(event.tile)
 
     def get_draw_events(self):
@@ -113,15 +118,24 @@ class Visualizer:
     def set_run_mode(self, new_run_mode):
         self.run_mode = new_run_mode
 
+    def set_tile_count(self, count: int):
+        self.tile_count = count
+
     def draw_fps(self):
         if conf["debug"]["draw_fps"]:
             fps = self.font.render("FPS: " + str(int(self.clock.get_fps())), True, RED)
             self.screen.blit(fps, (20, 20))
 
+    def draw_coverage(self):
+        if conf["debug"]["draw_coverage"]:
+            percentage = self.covered_tiles / self.tile_count * 100 if self.tile_count > 0 else 0
+            coverage_text = self.font.render("Coverage: " + str(int(percentage)) + "%", True, RED)
+            self.screen.blit(coverage_text, (20, 40))
+
     def draw_time(self):
         if conf["debug"]["draw_time"] and self.run_mode == Runmode.SIM:
             time = self.font.render("Time: " + str(self.ticks), True, RED)
-            self.screen.blit(time, (20, 40))
+            self.screen.blit(time, (20, 60))
 
     def draw(self):
         self.screen.fill(WHITE)
@@ -139,5 +153,6 @@ class Visualizer:
         self.draw_temp_rectangle()
         self.draw_fps()
         self.draw_time()
+        self.draw_coverage()
 
         pygame.display.flip()

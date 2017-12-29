@@ -1,5 +1,5 @@
 from events.EventType import EventType
-from sprite.Tile import Tile
+from sprite.Tile import Tile, TileState
 
 
 class TileCovered:
@@ -7,3 +7,4 @@ class TileCovered:
 
     def __init__(self, tile: Tile):
         self.tile = tile
+        self.tile.state = TileState.COVERED

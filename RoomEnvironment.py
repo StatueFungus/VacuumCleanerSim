@@ -2,9 +2,10 @@ from events.EventType import EventType
 from events.ObstacleAdded import ObstacleAdded
 from events.RobotPlaced import RobotPlaced
 from events.TileCovered import TileCovered
+from sprite import Box
 from sprite.Obstacle import Obstacle
 from sprite.Robot import Robot
-from sprite.Tile import Tile
+from sprite.Tile import Tile, TileState
 from utils.colorUtils import DARK_GREY
 from utils.listUtils import filter_none
 
@@ -20,8 +21,8 @@ class RoomEnvironment:
         self.height = height
         self.tile_size = tile_size
 
-        self.initialize_walls()
         self.initialize_tiles()
+        self.initialize_walls()
 
     def update(self, events):
         new_events = []
@@ -46,7 +47,8 @@ class RoomEnvironment:
         self.walls.append(Obstacle(self.width - self.tile_size, self.tile_size, self.tile_size,
                                    self.height - 2 * self.tile_size))
 
-        self.obstacles = list(self.walls)
+        for obstacle in self.walls:
+            self._add_obstacle(obstacle)
 
     def initialize_tiles(self):
         for x in range(0, self.width, self.tile_size):
@@ -95,8 +97,14 @@ class RoomEnvironment:
 
         # return ObstacleAdded event with clipped obstacle
         new_obstacle = Obstacle(x, y, width, height, DARK_GREY)
-        self.obstacles.append(new_obstacle)
+        self._add_obstacle(new_obstacle)
         return ObstacleAdded(new_obstacle)
+
+    def _add_obstacle(self, obstacle: Obstacle):
+        self.obstacles.append(obstacle)
+        affected_tiles = self.get_affected_tiles(obstacle.rect.x, obstacle.rect.y, obstacle.width, obstacle.height)
+        for tile in affected_tiles:
+            tile.state = TileState.COVERED_BY_OBSTACLE
 
     def handle_drawn_robot(self, robot):
         x, y, radius = robot[0], robot[1], robot[2]
@@ -120,7 +128,8 @@ class RoomEnvironment:
         if self.robot is not None:
             x, y, r = self.robot.x, self.robot.y, self.robot.radius
             affected_tiles = self.get_affected_tiles(x, y, r * 2, r * 2)
-            affected_covered_tiles = filter(lambda t: not t.covered and self.robot.covers_tile(t), affected_tiles)
+            affected_covered_tiles = list(filter(lambda t: t.state == TileState.UNCOVERED and self.robot.covers_tile(t),
+                                                 affected_tiles))
 
             covered_tiles_events.extend(map(lambda t: TileCovered(t), affected_covered_tiles))
         return covered_tiles_events
@@ -130,10 +139,19 @@ class RoomEnvironment:
         start_x = int(x / self.tile_size)
         start_y = int(y / self.tile_size)
         end_x = int((x + width) / self.tile_size)
+        end_x = end_x - 1 if x % self.tile_size == 0 else end_x
         end_y = int((y + height) / self.tile_size)
+        end_y = end_y - 1 if y % self.tile_size == 0 else end_y
 
         for idx_x in range(start_x, end_x + 1):
             for idx_y in range(start_y, end_y + 1):
                 affected_tiles.append(self.tiles[idx_x][idx_y])
 
         return affected_tiles
+
+    def get_tile_count(self):
+        count = 0
+        for col in self.tiles:
+            uncovered_tiles = list(filter(lambda t: t.state == TileState.UNCOVERED, col))
+            count = count + len(uncovered_tiles)
+        return count
