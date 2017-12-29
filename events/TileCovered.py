@@ -1,9 +1,9 @@
 from events.EventType import EventType
+from sprite.Tile import Tile
 
 
 class TileCovered:
     type = EventType.TILE_COVERED
-    tile = None
 
-    def __init__(self, tile):
+    def __init__(self, tile: Tile):
         self.tile = tile

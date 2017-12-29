@@ -2,6 +2,7 @@ from enum import Enum
 
 import pygame
 
+from sprite.Tile import Tile
 from utils.colorUtils import GREEN, BLACK
 from utils.mathUtils import distance, get_direction
 from utils.pygameUtils import rot_center
@@ -17,12 +18,12 @@ class RobotState(Enum):
 
 
 class Robot(pygame.sprite.Sprite):
-    def __init__(self, x, y, diameter, color=BLACK):
+    def __init__(self, x, y, radius, color=BLACK):
         super().__init__()
-        self.image = pygame.Surface([diameter * 2, diameter * 2], pygame.SRCALPHA)
+        self.image = pygame.Surface([radius * 2, radius * 2], pygame.SRCALPHA)
         self._org_image = self.image
-        pygame.draw.circle(self.image, color, (diameter, diameter), diameter)
-        pygame.draw.polygon(self.image, GREEN, [(0, diameter), (2 * diameter, diameter), (diameter, 0)])
+        pygame.draw.circle(self.image, color, (radius, radius), radius)
+        pygame.draw.polygon(self.image, GREEN, [(0, radius), (2 * radius, radius), (radius, 0)])
 
         self.state = RobotState.STOP
         self.rect = self.image.get_rect()
@@ -34,7 +35,7 @@ class Robot(pygame.sprite.Sprite):
         self.angle = 0
         self.angle_delta = 0  # angle to rotate
         self.walk_delta = 0  # distance to walk
-        self.diameter = diameter
+        self.radius = radius
         self.busy = False
         self.direction = get_direction(self.angle)
 
@@ -52,7 +53,7 @@ class Robot(pygame.sprite.Sprite):
             self.angle_delta = c.delta_angle
 
     def collides_rectangle(self, rect):
-        d = self.diameter
+        d = self.radius
         c = self.rect.x + d, self.rect.y + d  # configuration of the middle of the circle
         # get vertices from rectangle
         v0, v1, v2, v3 = [rect.get_vertex(i) for i in range(4)]
@@ -72,6 +73,14 @@ class Robot(pygame.sprite.Sprite):
             return True
 
         return False
+
+    def covers_tile(self, tile: Tile):
+        d = self.radius
+        c = self.rect.x + d, self.rect.y + d  # configuration of the middle of the circle
+        # get vertices from rectangle
+        v0, v1, v2, v3 = [tile.get_vertex(i) for i in range(4)]
+
+        return distance(c, v0) < d and distance(c, v1) < d and distance(c, v2) < d and distance(c, v3) < d
 
     def update(self):
 

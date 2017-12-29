@@ -1,16 +1,19 @@
 from events.EventType import EventType
 from events.ObstacleAdded import ObstacleAdded
 from events.RobotPlaced import RobotPlaced
+from events.TileCovered import TileCovered
 from sprite.Obstacle import Obstacle
 from sprite.Robot import Robot
-from utils.colorUtils import GREEN
+from sprite.Tile import Tile
+from utils.colorUtils import DARK_GREY
 from utils.listUtils import filter_none
 
 
 class RoomEnvironment:
-    def __init__(self, width, height, tile_size):
+    def __init__(self, width: int, height: int, tile_size: int):
         self.obstacles = []
         self.walls = []
+        self.tiles = []
         self.robot = None
 
         self.width = width
@@ -18,6 +21,7 @@ class RoomEnvironment:
         self.tile_size = tile_size
 
         self.initialize_walls()
+        self.initialize_tiles()
 
     def update(self, events):
         new_events = []
@@ -31,6 +35,8 @@ class RoomEnvironment:
                 if event.type == EventType.CONFIGURATION_CHANGED:
                     new_events.append(self.handle_configuration_changed(event))
 
+        new_events.extend(self.check_for_new_covered_tiles())
+
         return filter_none(new_events)
 
     def initialize_walls(self):
@@ -41,6 +47,14 @@ class RoomEnvironment:
                                    self.height - 2 * self.tile_size))
 
         self.obstacles = list(self.walls)
+
+    def initialize_tiles(self):
+        for x in range(0, self.width, self.tile_size):
+            col = []
+            for y in range(0, self.height, self.tile_size):
+                col.append(Tile(x, y))
+
+            self.tiles.append(col)
 
     def get_params(self):
         return self.width, self.height, self.tile_size
@@ -80,23 +94,46 @@ class RoomEnvironment:
             y = self.tile_size
 
         # return ObstacleAdded event with clipped obstacle
-        new_obstacle = Obstacle(x, y, width, height, GREEN)
+        new_obstacle = Obstacle(x, y, width, height, DARK_GREY)
         self.obstacles.append(new_obstacle)
         return ObstacleAdded(new_obstacle)
 
     def handle_drawn_robot(self, robot):
-        x, y, diameter = robot[0], robot[1], robot[2]
+        x, y, radius = robot[0], robot[1], robot[2]
 
-        print(x,y)
+        print(x, y)
         # TODO check for collision when placing
         if self.robot is not None:
             self.robot.rect.x = x
             self.robot.rect.y = y
             return RobotPlaced(self.robot)
 
-        new_robot = Robot(x, y, diameter)
+        new_robot = Robot(x, y, radius)
         self.robot = new_robot
         return RobotPlaced(new_robot)
 
     def handle_configuration_changed(self, event):
         self.robot.set_configuration(event)
+
+    def check_for_new_covered_tiles(self):
+        covered_tiles_events = []
+        if self.robot is not None:
+            x, y, r = self.robot.x, self.robot.y, self.robot.radius
+            affected_tiles = self.get_affected_tiles(x, y, r * 2, r * 2)
+            affected_covered_tiles = filter(lambda t: not t.covered and self.robot.covers_tile(t), affected_tiles)
+
+            covered_tiles_events.extend(map(lambda t: TileCovered(t), affected_covered_tiles))
+        return covered_tiles_events
+
+    def get_affected_tiles(self, x, y, width, height):
+        affected_tiles = []
+        start_x = int(x / self.tile_size)
+        start_y = int(y / self.tile_size)
+        end_x = int((x + width) / self.tile_size)
+        end_y = int((y + height) / self.tile_size)
+
+        for idx_x in range(start_x, end_x + 1):
+            for idx_y in range(start_y, end_y + 1):
+                affected_tiles.append(self.tiles[idx_x][idx_y])
+
+        return affected_tiles

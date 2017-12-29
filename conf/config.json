@@ -1,11 +1,11 @@
 {
   "environment": {
-    "tile_size": 10,
+    "tile_size": 8,
     "width": 800,
     "height": 600
   },
   "robot":{
-    "diameter": 30,
+    "radius": 30,
     "wss": 2,
     "rss": 5
   },

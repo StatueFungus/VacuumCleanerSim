@@ -61,8 +61,8 @@ class Visualizer:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_r:
                     x, y = pygame.mouse.get_pos()
-                    diameter = conf["robot"]["diameter"]
-                    self.temp_robot = (x, y, diameter)
+                    radius = conf["robot"]["radius"]
+                    self.temp_robot = (x, y, radius)
             if event.type == pygame.MOUSEBUTTONDOWN:
                 log.error("mouse down")
                 self.mouse_down = True
