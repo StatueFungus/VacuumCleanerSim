@@ -1,3 +1,6 @@
+import os
+from time import strftime, gmtime
+
 import pygame
 from pygame.locals import *
 
@@ -51,7 +54,9 @@ class Visualizer:
         self.temp_robot = None
 
         # --- display configuration ---
-        self.show_coverage_path = False
+        self.show_coverage_path = True
+
+        self.time = strftime("%Y%m%d%H%M%S", gmtime())
 
     def update(self, sim_events=None, pygame_events=None):
         if sim_events is not None and len(sim_events) != 0:
@@ -60,6 +65,9 @@ class Visualizer:
             self.handle_pygame_events(pygame_events)
 
         if self.run_mode == Runmode.SIM:
+            if self.ticks % 1000 == 0:
+                self.save_screenshot()
+
             self.ticks = self.ticks + 1
 
         self.draw()
@@ -164,3 +172,15 @@ class Visualizer:
         self.draw_coverage()
 
         pygame.display.flip()
+
+    def save_screenshot(self):
+        print("save screenshot")
+
+        if not os.path.exists("output"):
+            os.makedirs("output")
+
+        if not os.path.exists("output/" + str(self.time)):
+            os.makedirs("output/" + str(self.time))
+
+        filename = "output/" + str(self.time) + "/" + str(self.ticks) + ".png"
+        pygame.image.save(self.screen, filename)
