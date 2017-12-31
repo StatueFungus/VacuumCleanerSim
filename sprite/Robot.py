@@ -42,7 +42,10 @@ class Robot(pygame.sprite.Sprite):
 
         self.wss = conf["robot"]["wss"]
         self.rss = conf["robot"]["rss"]
-        print(self.direction)
+
+        # these two properties are used for slower walk and/or slower rotating while walking
+        self.custom_wss = self.wss
+        self.custom_rss = self.rss
 
     def get_configuration(self):
         return self.rect.x, self.rect.y, self.angle
@@ -52,6 +55,10 @@ class Robot(pygame.sprite.Sprite):
             self.state = c.new_state
         if c.delta_angle is not None:
             self.angle_delta = c.delta_angle
+        if c.rss is not None:
+            self.custom_rss = c.rss
+        if c.wss is not None:
+            self.custom_wss = c.wss
 
     def collides_rectangle(self, rect):
         d = self.radius
@@ -85,12 +92,12 @@ class Robot(pygame.sprite.Sprite):
 
     def update(self):
 
-        if self.state == RobotState.ROTATE or self.state == RobotState.WALK_ROTATE:
+        if self.state == RobotState.ROTATE:
             # rotate logic
             if not self.busy:
                 self.busy = True
 
-            if math.fabs(self.angle_delta) < self.rss:
+            if math.fabs(self.angle_delta) < self.custom_rss:
                 self.angle = self.angle - self.angle_delta
                 self.angle_delta = 0
 
@@ -99,18 +106,21 @@ class Robot(pygame.sprite.Sprite):
                 self.busy = False
 
             if self.angle_delta > 0:
-                self.angle = self.angle + self.rss
-                self.angle_delta = self.angle_delta - self.rss
+                self.angle = self.angle + self.custom_rss
+                self.angle_delta = self.angle_delta - self.custom_rss
 
             if self.angle_delta < 0:
-                self.angle = self.angle - self.rss
-                self.angle_delta = self.angle_delta + self.rss
+                self.angle = self.angle - self.custom_rss
+                self.angle_delta = self.angle_delta + self.custom_rss
 
+        if self.state == RobotState.WALK_ROTATE:
+            self.angle = self.angle - self.custom_rss
+            self.direction = get_direction(self.angle)
 
         if self.state == RobotState.WALK or self.state == RobotState.WALK_ROTATE:
             # walk logic
-            self.x = self.x - self.direction[0] * self.wss
-            self.y = self.y - self.direction[1] * self.wss
+            self.x = self.x - self.direction[0] * self.custom_wss
+            self.y = self.y - self.direction[1] * self.custom_wss
 
         if self.state == RobotState.WALK_BACKWARDS_THEN_ROTATE:
             # walk backwards logic
@@ -119,8 +129,8 @@ class Robot(pygame.sprite.Sprite):
                 self.walk_delta = 15
 
             if self.walk_delta != 0:
-                self.x = self.x + self.direction[0] * self.wss
-                self.y = self.y + self.direction[1] * self.wss
+                self.x = self.x + self.direction[0] * self.custom_wss
+                self.y = self.y + self.direction[1] * self.custom_wss
                 self.walk_delta = self.walk_delta - 2  # walk speed
 
             if self.walk_delta <= 0:
@@ -132,6 +142,9 @@ class Robot(pygame.sprite.Sprite):
         if self.state == RobotState.STOP:
             # stop logic
             self.busy = False
+            # reset to normal speed
+            self.custom_rss = self.rss
+            self.custom_wss = self.wss
 
         # this is nessecary because the coordinates of self.rect can only be integers.
         # if there is a direction of (0.1,1) the x-coord does not affect the direction

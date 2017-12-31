@@ -6,6 +6,7 @@ from pygame.locals import *
 from RoomEnvironment import RoomEnvironment
 from Visualizer import Visualizer
 from algorithm.RandomBounceWalkAlgorithm import RandomBounceWalkAlgorithm
+from algorithm.SpiralWalkAlgorithm import SpiralWalkAlgorithm
 from utils.Runmode import Runmode
 from utils.confUtils import CONF as conf
 from utils.confUtils import LOG as log
@@ -23,7 +24,8 @@ class VacuumCleanerSim:
         self.clock = pygame.time.Clock()
         self.environment = RoomEnvironment(env_conf["width"], env_conf["height"], tile_size)
         self.visualizer = Visualizer(self.environment, self.clock)
-        self.algorithm = RandomBounceWalkAlgorithm()
+        # self.algorithm = RandomBounceWalkAlgorithm()
+        self.algorithm = SpiralWalkAlgorithm()
 
     def start_simulation(self):
         log.error("Start simulation")
