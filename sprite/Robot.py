@@ -56,9 +56,9 @@ class Robot(pygame.sprite.Sprite):
         if c.delta_angle is not None:
             self.angle_delta = c.delta_angle
         if c.rss is not None:
-            self.custom_rss = c.rss
+            self.custom_rss = c.rss if c.rss < self.rss else self.rss
         if c.wss is not None:
-            self.custom_wss = c.wss
+            self.custom_wss = c.wss if c.wss <= self.wss else self.wss
 
     def collides_rectangle(self, rect):
         d = self.radius
@@ -93,12 +93,12 @@ class Robot(pygame.sprite.Sprite):
     def update(self):
 
         if self.state == RobotState.ROTATE:
-            # rotate logic
+            # rotate logic. robot rotates until it reaches the new angle
             if not self.busy:
                 self.busy = True
 
             if math.fabs(self.angle_delta) < self.custom_rss:
-                self.angle = self.angle - self.angle_delta
+                self.angle = (self.angle - self.angle_delta) % 360
                 self.angle_delta = 0
 
                 self.direction = get_direction(self.angle)
@@ -106,15 +106,16 @@ class Robot(pygame.sprite.Sprite):
                 self.busy = False
 
             if self.angle_delta > 0:
-                self.angle = self.angle + self.custom_rss
+                self.angle = (self.angle + self.custom_rss) % 360
                 self.angle_delta = self.angle_delta - self.custom_rss
 
             if self.angle_delta < 0:
-                self.angle = self.angle - self.custom_rss
+                self.angle = (self.angle - self.custom_rss) % 360
                 self.angle_delta = self.angle_delta + self.custom_rss
 
         if self.state == RobotState.WALK_ROTATE:
-            self.angle = self.angle - self.custom_rss
+            # robot rotates every update period
+            self.angle = (self.angle - self.custom_rss) % 360
             self.direction = get_direction(self.angle)
 
         if self.state == RobotState.WALK or self.state == RobotState.WALK_ROTATE:
