@@ -19,13 +19,14 @@ class Visualizer:
         self.clock = clock
         self.run_mode = Runmode.BUILD
 
-        self.screen = pygame.display.set_mode((w, h), DOUBLEBUF)
+        flags = DOUBLEBUF
+        # flags = FULLSCREEN | DOUBLEBUF
+        self.screen = pygame.display.set_mode((w, h), flags)
         self.screen.set_alpha(None)
 
         self.font = pygame.font.Font(None, 20)
 
         self.tile_group = pygame.sprite.Group()
-        # self.tile_group.add(env.tiles)
 
         self.robot = None
         self.robot_group = pygame.sprite.Group()
@@ -49,6 +50,9 @@ class Visualizer:
         # --- Temp robot tuple ---
         self.temp_robot = None
 
+        # --- display configuration ---
+        self.show_coverage_path = False
+
     def update(self, sim_events=None, pygame_events=None):
         if sim_events is not None and len(sim_events) != 0:
             self.handle_sim_events(sim_events)
@@ -67,6 +71,9 @@ class Visualizer:
                     x, y = pygame.mouse.get_pos()
                     radius = conf["robot"]["radius"]
                     self.temp_robot = (x, y, radius)
+                if event.key == pygame.K_p:
+                    self.show_coverage_path = not self.show_coverage_path
+                    print("coverage")
             if event.type == pygame.MOUSEBUTTONDOWN:
                 log.error("mouse down")
                 self.mouse_down = True
@@ -145,7 +152,8 @@ class Visualizer:
         self.obstacle_group.update()
         self.robot_group.update()
 
-        self.tile_group.draw(self.screen)
+        if self.show_coverage_path:
+            self.tile_group.draw(self.screen)
         self.wall_group.draw(self.screen)
         self.obstacle_group.draw(self.screen)
         self.robot_group.draw(self.screen)

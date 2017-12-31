@@ -51,7 +51,7 @@ class VacuumCleanerSim:
                 new_events.extend(environment_events)
 
                 # update the visualizer with all new events
-                self.visualizer.update(sim_events=new_events)
+                self.visualizer.update(pygame_events=pygame_events, sim_events=new_events)
 
             # save all events into the event stream. this could be useful for re-simulating ...
             self.event_stream.append(new_events)

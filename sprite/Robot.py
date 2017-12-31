@@ -1,6 +1,7 @@
 from enum import Enum
 
 import pygame
+import math
 
 from sprite.Tile import Tile
 from utils.colorUtils import GREEN, BLACK
@@ -89,17 +90,22 @@ class Robot(pygame.sprite.Sprite):
             if not self.busy:
                 self.busy = True
 
-            if self.angle_delta != 0:
-                self.angle = self.angle + self.rss
-                self.angle_delta = self.angle_delta - self.rss
-
-            if self.angle_delta <= 0:
+            if math.fabs(self.angle_delta) < self.rss:
                 self.angle = self.angle - self.angle_delta
                 self.angle_delta = 0
 
                 self.direction = get_direction(self.angle)
                 self.state = RobotState.WALK
                 self.busy = False
+
+            if self.angle_delta > 0:
+                self.angle = self.angle + self.rss
+                self.angle_delta = self.angle_delta - self.rss
+
+            if self.angle_delta < 0:
+                self.angle = self.angle - self.rss
+                self.angle_delta = self.angle_delta + self.rss
+
 
         if self.state == RobotState.WALK or self.state == RobotState.WALK_ROTATE:
             # walk logic
@@ -132,4 +138,4 @@ class Robot(pygame.sprite.Sprite):
         self.rect.x = self.x
         self.rect.y = self.y
 
-        self.image = rot_center(self._org_image, self.angle * -1)
+        self.image = rot_center(self._org_image, (self.angle % 360) * -1)

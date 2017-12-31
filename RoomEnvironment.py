@@ -41,11 +41,12 @@ class RoomEnvironment:
         return filter_none(new_events)
 
     def initialize_walls(self):
-        self.walls.append(Obstacle(0, 0, self.width, self.tile_size))
-        self.walls.append(Obstacle(0, self.tile_size, self.tile_size, self.height - 2 * self.tile_size))
-        self.walls.append(Obstacle(0, self.height - self.tile_size, self.width, self.tile_size))
+        wall_color = DARK_GREY
+        self.walls.append(Obstacle(0, 0, self.width, self.tile_size, wall_color))
+        self.walls.append(Obstacle(0, self.tile_size, self.tile_size, self.height - 2 * self.tile_size, wall_color))
+        self.walls.append(Obstacle(0, self.height - self.tile_size, self.width, self.tile_size, wall_color))
         self.walls.append(Obstacle(self.width - self.tile_size, self.tile_size, self.tile_size,
-                                   self.height - 2 * self.tile_size))
+                                   self.height - 2 * self.tile_size, wall_color))
 
         for obstacle in self.walls:
             self._add_obstacle(obstacle)
@@ -62,7 +63,8 @@ class RoomEnvironment:
         return self.width, self.height, self.tile_size
 
     def clear_obstacles(self):
-        self.obstacles = self.walls[:]  # copies the wall list
+        self.initialize_tiles()
+        self.initialize_walls()
 
     def set_robot(self, robot):
         self.robot = robot

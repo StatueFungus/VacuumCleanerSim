@@ -10,7 +10,7 @@
     "rss": 5
   },
   "simulation": {
-    "fps": 45
+    "fps": 60
   },
   "debug": {
     "draw_fps": true,

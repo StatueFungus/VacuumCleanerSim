@@ -16,6 +16,8 @@ class RandomBounceWalkAlgorithm(AbstractCleaningAlgorithm):
         if not robot.busy and self.robot_colided(obstacles, robot):
             new_state = RobotState.WALK_BACKWARDS_THEN_ROTATE
             delta_angle = randint(70, 150)
+            if randint(0, 1):
+                delta_angle = delta_angle * -1
             configuration_events.append(ConfigurationChanged(new_state=new_state, delta_angle=delta_angle))
 
         return configuration_events

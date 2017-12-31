@@ -1,7 +1,7 @@
 from enum import Enum
 
 from sprite.Box import Box
-from utils.colorUtils import LIGHT_GREY
+from utils.colorUtils import LIGHT_GREY, BLACK
 from utils.confUtils import CONF as conf
 
 
@@ -12,6 +12,10 @@ class Tile(Box):
         super().__init__(x, y, ts, ts, LIGHT_GREY)
 
         self.state = TileState.UNCOVERED
+
+    def update(self):
+        if self.state == TileState.COVERED_BY_OBSTACLE:
+            self.image.fill(BLACK)
 
 
 class TileState(Enum):
