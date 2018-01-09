@@ -26,3 +26,6 @@ class Box(pygame.sprite.Sprite):
             return self.rect.x + self.width, self.rect.y
         if idx == 3:
             return self.rect.x, self.rect.y
+
+    def __repr__(self):
+        return "[" + str(self.rect.x) + ", " + str(self.rect.y) + ", " + str(self.width) + ", " + str(self.height) + "]"

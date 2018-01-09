@@ -81,13 +81,10 @@ class Visualizer:
                     self.temp_robot = (x, y, radius)
                 if event.key == pygame.K_p:
                     self.show_coverage_path = not self.show_coverage_path
-                    print("coverage")
             if event.type == pygame.MOUSEBUTTONDOWN:
-                log.error("mouse down")
                 self.mouse_down = True
                 self.start_point = pygame.mouse.get_pos()
             if event.type == pygame.MOUSEBUTTONUP:
-                log.error("mouse up")
                 self.mouse_down = False
                 self.new_rectangle = self.temp_rectangle
                 self.start_point = None
@@ -96,10 +93,10 @@ class Visualizer:
     def handle_sim_events(self, events):
         for event in events:
             if event.type == EventType.OBSTACLE_ADDED:
-                log.error("Add Obstacle")
+                log.info("Add Obstacle " + str(event.new_obstacle))
                 self.obstacle_group.add(event.new_obstacle)
             if event.type == EventType.ROBOT_PLACED:
-                log.error("Robot placed")
+                log.info("Robot placed " + str(event.placed_robot))
                 self.robot_group.add(event.placed_robot)
             if event.type == EventType.TILE_COVERED:
                 self.covered_tiles = self.covered_tiles + 1
@@ -174,6 +171,7 @@ class Visualizer:
         pygame.display.flip()
 
     def save_screenshot(self):
+        log.info("make screenshot")
         if not os.path.exists("output"):
             os.makedirs("output")
 

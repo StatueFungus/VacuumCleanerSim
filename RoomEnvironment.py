@@ -111,7 +111,6 @@ class RoomEnvironment:
     def handle_drawn_robot(self, robot):
         x, y, radius = robot[0], robot[1], robot[2]
 
-        print(x, y)
         # TODO check for collision when placing
         if self.robot is not None:
             self.robot.rect.x = x

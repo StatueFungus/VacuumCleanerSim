@@ -1,5 +1,6 @@
 import pygame
 import sys
+import logging
 
 from pygame.locals import *
 
@@ -63,7 +64,7 @@ class VacuumCleanerSim:
             if event.type == pygame.QUIT:
                 sys.exit()
             if event.type == KEYDOWN and event.key == K_c:
-                log.error("Clear obstacles")
+                log.info("Clear obstacles")
                 self.environment.clear_obstacles()
                 self.visualizer.clean_obstacles()
             if event.type == KEYDOWN and event.key == K_m:
@@ -71,7 +72,7 @@ class VacuumCleanerSim:
                     self.run_mode = Runmode.SIM
                     self.visualizer.set_run_mode(self.run_mode)
                     self.visualizer.set_tile_count(self.environment.get_tile_count())
-                    log.error("Switched run mode to simulation")
+                    log.info("Switched run mode to simulation")
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
                 sys.exit()
 

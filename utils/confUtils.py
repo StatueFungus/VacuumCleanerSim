@@ -46,8 +46,8 @@ def get_logger(name):
     :rtype: logging.getLogger instance
 
     """
+    logging.basicConfig(level=logging.ERROR)
     log = logging.getLogger(name)
-    log.setLevel(logging.ERROR)
 
     return log
 

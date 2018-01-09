@@ -153,3 +153,6 @@ class Robot(pygame.sprite.Sprite):
         self.rect.y = self.y
 
         self.image = rot_center(self._org_image, (self.angle % 360) * -1)
+
+    def __repr__(self):
+        return "[" + str(self.rect.x) + ", " + str(self.rect.y) + ", " + str(self.radius) + "]"
