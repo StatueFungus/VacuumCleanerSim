@@ -174,8 +174,6 @@ class Visualizer:
         pygame.display.flip()
 
     def save_screenshot(self):
-        print("save screenshot")
-
         if not os.path.exists("output"):
             os.makedirs("output")
 
