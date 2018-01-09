@@ -31,14 +31,16 @@ class Visualizer:
 
         self.tile_group = pygame.sprite.Group()
 
-        self.robot = None
-        self.robot_group = pygame.sprite.Group()
-
         self.wall_group = pygame.sprite.Group()
         self.wall_group.add(env.walls)
 
         self.obstacle_group = pygame.sprite.Group()
         self.obstacle_group.add(env.obstacles)
+
+        self.robot = env.robot
+        self.robot_group = pygame.sprite.Group()
+        if self.robot is not None:
+            self.robot_group.add(self.robot)
 
         # --- used for statistic --
         self.tile_count = 0
@@ -75,7 +77,7 @@ class Visualizer:
     def handle_pygame_events(self, events):
         for event in events:
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_r:
+                if event.key == pygame.K_r and self.robot is None:
                     x, y = pygame.mouse.get_pos()
                     radius = conf["robot"]["radius"]
                     self.temp_robot = (x, y, radius)

@@ -11,7 +11,7 @@ from utils.listUtils import filter_none
 
 
 class RoomEnvironment:
-    def __init__(self, width: int, height: int, tile_size: int):
+    def __init__(self, width: int, height: int, tile_size: int, obstacles=None, robot=None):
         self.obstacles = []
         self.walls = []
         self.tiles = []
@@ -23,6 +23,12 @@ class RoomEnvironment:
 
         self.initialize_tiles()
         self.initialize_walls()
+
+        if obstacles is not None:
+            self.initialize_default_obstacles(obstacles)
+
+        if robot is not None:
+            self.initialize_default_robot(robot)
 
     def update(self, events):
         new_events = []
@@ -156,3 +162,10 @@ class RoomEnvironment:
             uncovered_tiles = list(filter(lambda t: t.state == TileState.UNCOVERED, col))
             count = count + len(uncovered_tiles)
         return count
+
+    def initialize_default_obstacles(self, obstacles):
+        for obstacle in obstacles:
+            self._add_obstacle(Obstacle(obstacle[0],obstacle[1],obstacle[2],obstacle[3], DARK_GREY))
+
+    def initialize_default_robot(self, robot):
+        self.robot = Robot(robot[0], robot[1], robot[2])

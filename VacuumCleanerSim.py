@@ -1,6 +1,5 @@
 import pygame
 import sys
-import logging
 
 from pygame.locals import *
 
@@ -23,10 +22,12 @@ class VacuumCleanerSim:
         tile_size = env_conf["tile_size"]
 
         self.clock = pygame.time.Clock()
-        self.environment = RoomEnvironment(env_conf["width"], env_conf["height"], tile_size)
+        default_obstacles, default_robot = self.get_default_environment()
+        self.environment = RoomEnvironment(env_conf["width"], env_conf["height"], tile_size, default_obstacles, default_robot)
         self.visualizer = Visualizer(self.environment, self.clock)
-        # self.algorithm = RandomBounceWalkAlgorithm()
-        self.algorithm = SpiralWalkAlgorithm()
+        self.algorithms = {"random": RandomBounceWalkAlgorithm(), "spiral": SpiralWalkAlgorithm()}
+
+        self.algorithm = self.algorithms[self.get_algorithm_name()]
 
     def start_simulation(self):
         log.info("Start simulation")
@@ -75,6 +76,21 @@ class VacuumCleanerSim:
                     log.info("Switched run mode to simulation")
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
                 sys.exit()
+
+    def get_algorithm_name(self):
+        if len(sys.argv) > 1:
+            return sys.argv[1]
+        else:
+            return conf["simulation"]["default_algorithm"]
+
+    def get_default_environment(self):
+        if len(sys.argv) > 2:
+            default_index = sys.argv[2]
+            default_conf = conf["environment"]["defaults"]
+            if default_index in default_conf:
+                return default_conf[default_index].get("obstacles", None), default_conf[default_index].get("robot", None)
+
+        return None, None
 
 
 if __name__ == '__main__':

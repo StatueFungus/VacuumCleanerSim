@@ -2,7 +2,11 @@
   "environment": {
     "tile_size": 10,
     "width": 800,
-    "height": 600
+    "height": 600,
+    "defaults": {
+      "1": { "obstacles": [[488, 10, 302, 318], [10, 327, 209, 263]], "robot": [703, 516, 30] },
+      "2": { "obstacles": [[361, 10, 76, 462]], "robot": [694, 501, 30] }
+    }
   },
   "robot":{
     "radius": 30,
@@ -10,7 +14,8 @@
     "rss": 5
   },
   "simulation": {
-    "fps": 60
+    "fps": 60,
+    "default_algorithm": "random"
   },
   "debug": {
     "draw_fps": true,
