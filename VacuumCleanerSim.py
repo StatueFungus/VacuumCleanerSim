@@ -24,7 +24,7 @@ class VacuumCleanerSim:
         self.clock = pygame.time.Clock()
         default_obstacles, default_robot = self.get_default_environment()
         self.environment = RoomEnvironment(env_conf["width"], env_conf["height"], tile_size, default_obstacles, default_robot)
-        self.visualizer = Visualizer(self.environment, self.clock)
+        self.visualizer = Visualizer(self.environment, self.clock, self.environment.initial_events)
         self.algorithms = {"random": RandomBounceWalkAlgorithm(), "spiral": SpiralWalkAlgorithm()}
 
         self.algorithm = self.algorithms[self.get_algorithm_name()]

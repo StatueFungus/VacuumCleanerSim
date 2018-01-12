@@ -8,3 +8,4 @@ class EventType(Enum):
     ROBOT_DRAWN = 4
     ROBOT_PLACED = 5
     TILE_COVERED = 6
+    TILE_COVERED_BY_OBSTACLE = 7

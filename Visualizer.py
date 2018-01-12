@@ -14,7 +14,7 @@ from utils.confUtils import CONF as conf
 
 
 class Visualizer:
-    def __init__(self, env, clock):
+    def __init__(self, env, clock, initial_events):
         pygame.init()
         w, h, _ = env.get_params()
 
@@ -60,6 +60,8 @@ class Visualizer:
 
         self.time = strftime("%Y%m%d%H%M%S", gmtime())
 
+        self.handle_sim_events(initial_events)
+
     def update(self, sim_events=None, pygame_events=None):
         if sim_events is not None and len(sim_events) != 0:
             self.handle_sim_events(sim_events)
@@ -100,8 +102,10 @@ class Visualizer:
             if event.type == EventType.ROBOT_PLACED:
                 log.info("Robot placed " + str(event.placed_robot))
                 self.robot_group.add(event.placed_robot)
-            if event.type == EventType.TILE_COVERED:
+            if event.type == EventType.TILE_COVERED and event.is_first_cover():
                 self.covered_tiles = self.covered_tiles + 1
+                self.tile_group.add(event.tile)
+            if event.type == EventType.TILE_COVERED_BY_OBSTACLE:
                 self.tile_group.add(event.tile)
 
     def get_draw_events(self):
@@ -143,7 +147,7 @@ class Visualizer:
     def draw_coverage(self):
         if conf["debug"]["draw_coverage"]:
             percentage = self.covered_tiles / self.tile_count * 100 if self.tile_count > 0 else 0
-            coverage_text = self.font.render("Coverage: " + str(int(percentage)) + "%", True, RED)
+            coverage_text = self.font.render("Tile-Coverage: " + str(int(percentage)) + "%", True, RED)
             self.screen.blit(coverage_text, (20, 40))
 
     def draw_time(self):
@@ -152,7 +156,9 @@ class Visualizer:
             self.screen.blit(time, (20, 60))
 
     def draw(self):
-        self.screen.fill(WHITE)
+        dirt = conf["simulation"].get("dirt", 35)
+        base_color = [255 - dirt, 255 - dirt, 255 - dirt]
+        self.screen.fill(base_color)
 
         self.tile_group.update()
         self.wall_group.update()

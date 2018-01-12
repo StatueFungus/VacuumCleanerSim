@@ -2,6 +2,7 @@ from events.EventType import EventType
 from events.ObstacleAdded import ObstacleAdded
 from events.RobotPlaced import RobotPlaced
 from events.TileCovered import TileCovered
+from events.TileCoveredByObstacle import TileCoveredByObstacle
 from sprite import Box
 from sprite.Obstacle import Obstacle
 from sprite.Robot import Robot
@@ -12,6 +13,8 @@ from utils.listUtils import filter_none
 
 class RoomEnvironment:
     def __init__(self, width: int, height: int, tile_size: int, obstacles=None, robot=None):
+        self.initial_events = []
+
         self.obstacles = []
         self.walls = []
         self.tiles = []
@@ -22,10 +25,10 @@ class RoomEnvironment:
         self.tile_size = tile_size
 
         self.initialize_tiles()
-        self.initialize_walls()
+        self.initial_events.extend(self.initialize_walls())
 
         if obstacles is not None:
-            self.initialize_default_obstacles(obstacles)
+            self.initial_events.extend(self.initialize_default_obstacles(obstacles))
 
         if robot is not None:
             self.initialize_default_robot(robot)
@@ -36,7 +39,7 @@ class RoomEnvironment:
         for event in events:
             if event is not None:
                 if event.type == EventType.OBSTACLE_DRAWN:
-                    new_events.append(self.handle_drawn_obstacle(event.drawn_obstacle))
+                    new_events.extend(self.handle_drawn_obstacle(event.drawn_obstacle))
                 if event.type == EventType.ROBOT_DRAWN:
                     new_events.append(self.handle_drawn_robot(event.drawn_robot))
                 if event.type == EventType.CONFIGURATION_CHANGED:
@@ -54,8 +57,11 @@ class RoomEnvironment:
         self.walls.append(Obstacle(self.width - self.tile_size, self.tile_size, self.tile_size,
                                    self.height - 2 * self.tile_size, wall_color))
 
+        events = []
         for obstacle in self.walls:
-            self._add_obstacle(obstacle)
+            events.extend(self._add_obstacle(obstacle))
+
+        return events
 
     def initialize_tiles(self):
         for x in range(0, self.width, self.tile_size):
@@ -103,16 +109,23 @@ class RoomEnvironment:
         if y < self.tile_size:
             y = self.tile_size
 
+        events = []
+
         # return ObstacleAdded event with clipped obstacle
         new_obstacle = Obstacle(x, y, width, height, DARK_GREY)
-        self._add_obstacle(new_obstacle)
-        return ObstacleAdded(new_obstacle)
+        events.extend(self._add_obstacle(new_obstacle))
+        events.append(ObstacleAdded(new_obstacle))
+
+        return events
 
     def _add_obstacle(self, obstacle: Obstacle):
         self.obstacles.append(obstacle)
         affected_tiles = self.get_affected_tiles(obstacle.rect.x, obstacle.rect.y, obstacle.width, obstacle.height)
+        events = []
         for tile in affected_tiles:
-            tile.state = TileState.COVERED_BY_OBSTACLE
+            events.append(TileCoveredByObstacle(tile))
+
+        return events
 
     def handle_drawn_robot(self, robot):
         x, y, radius = robot[0], robot[1], robot[2]
@@ -135,7 +148,7 @@ class RoomEnvironment:
         if self.robot is not None:
             x, y, r = self.robot.x, self.robot.y, self.robot.radius
             affected_tiles = self.get_affected_tiles(x, y, r * 2, r * 2)
-            affected_covered_tiles = list(filter(lambda t: t.state == TileState.UNCOVERED and self.robot.covers_tile(t),
+            affected_covered_tiles = list(filter(lambda t: (t.state == TileState.UNCOVERED or t.state == TileState.COVERED) and self.robot.covers_tile(t),
                                                  affected_tiles))
 
             covered_tiles_events.extend(map(lambda t: TileCovered(t), affected_covered_tiles))
@@ -164,8 +177,11 @@ class RoomEnvironment:
         return count
 
     def initialize_default_obstacles(self, obstacles):
+        events = []
         for obstacle in obstacles:
-            self._add_obstacle(Obstacle(obstacle[0],obstacle[1],obstacle[2],obstacle[3], DARK_GREY))
+            events.extend(self._add_obstacle(Obstacle(obstacle[0],obstacle[1],obstacle[2],obstacle[3], DARK_GREY)))
+
+        return events
 
     def initialize_default_robot(self, robot):
         self.robot = Robot(robot[0], robot[1], robot[2])

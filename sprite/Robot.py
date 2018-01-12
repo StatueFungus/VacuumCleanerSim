@@ -8,6 +8,7 @@ from utils.colorUtils import GREEN, BLACK
 from utils.mathUtils import distance, get_direction
 from utils.pygameUtils import rot_center
 from utils.confUtils import CONF as conf
+from utils.confUtils import LOG as log
 
 
 class RobotState(Enum):
