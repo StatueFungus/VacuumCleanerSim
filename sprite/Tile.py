@@ -38,16 +38,20 @@ class Tile(Box):
         self.need_update = True
 
     def increase_cover_count(self):
-        if self.temp_count == 0:
-            self.cover_count = self.cover_count + 1
+        if self.state != TileState.FULL_COVERED:
+            if self.temp_count == 0:
+                self.cover_count = self.cover_count + 1
+                if self.cover_count == self.steps:
+                    self.state = TileState.FULL_COVERED
 
-        self.temp_count = self.temp_count + 1
+            self.temp_count = self.temp_count + 1
 
-        if self.temp_count >= self.ticks_for_cover and self.cover_count < self.steps:
-            self.temp_count = 0
+            if self.temp_count >= self.ticks_for_cover and self.cover_count < self.steps:
+                self.temp_count = 0
 
 
 class TileState(Enum):
     UNCOVERED = 0
     COVERED = 1
-    COVERED_BY_OBSTACLE = 2
+    FULL_COVERED = 2
+    COVERED_BY_OBSTACLE = 3

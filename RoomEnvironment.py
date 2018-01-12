@@ -148,7 +148,7 @@ class RoomEnvironment:
         if self.robot is not None:
             x, y, r = self.robot.x, self.robot.y, self.robot.radius
             affected_tiles = self.get_affected_tiles(x, y, r * 2, r * 2)
-            affected_covered_tiles = list(filter(lambda t: (t.state == TileState.UNCOVERED or t.state == TileState.COVERED) and self.robot.covers_tile(t),
+            affected_covered_tiles = list(filter(lambda t: ((t.state == TileState.UNCOVERED or t.state == TileState.COVERED) and not t.state == TileState.FULL_COVERED) and self.robot.covers_tile(t),
                                                  affected_tiles))
 
             covered_tiles_events.extend(map(lambda t: TileCovered(t), affected_covered_tiles))

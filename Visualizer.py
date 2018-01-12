@@ -7,6 +7,7 @@ from pygame.locals import *
 from events.EventType import EventType
 from events.ObstacleDrawn import ObstacleDrawn
 from events.RobotDrawn import RobotDrawn
+from sprite.Tile import TileState
 from utils.Runmode import Runmode
 from utils.colorUtils import *
 from utils.confUtils import LOG as log
@@ -45,6 +46,7 @@ class Visualizer:
         # --- used for statistic --
         self.tile_count = 0
         self.covered_tiles = 0
+        self.full_covered_tiles = 0
 
         # --- Temp rectangle for placing new rectangles ---
         self.mouse_down = False
@@ -102,9 +104,13 @@ class Visualizer:
             if event.type == EventType.ROBOT_PLACED:
                 log.info("Robot placed " + str(event.placed_robot))
                 self.robot_group.add(event.placed_robot)
-            if event.type == EventType.TILE_COVERED and event.is_first_cover():
-                self.covered_tiles = self.covered_tiles + 1
-                self.tile_group.add(event.tile)
+            if event.type == EventType.TILE_COVERED:
+                if event.is_first_cover():
+                    self.covered_tiles = self.covered_tiles + 1
+                    self.tile_group.add(event.tile)
+                if event.tile.state == TileState.FULL_COVERED:
+                    self.full_covered_tiles = self.full_covered_tiles + 1
+                    self.tile_group.add(event.tile)
             if event.type == EventType.TILE_COVERED_BY_OBSTACLE:
                 self.tile_group.add(event.tile)
 
@@ -146,14 +152,18 @@ class Visualizer:
 
     def draw_coverage(self):
         if conf["debug"]["draw_coverage"]:
-            percentage = self.covered_tiles / self.tile_count * 100 if self.tile_count > 0 else 0
-            coverage_text = self.font.render("Tile-Coverage: " + str(int(percentage)) + "%", True, RED)
+            coverage_percentage = self.covered_tiles / self.tile_count * 100 if self.tile_count > 0 else 0
+            coverage_text = self.font.render("Tile-Coverage: " + str(int(coverage_percentage)) + "%", True, RED)
             self.screen.blit(coverage_text, (20, 40))
+
+            full_coverage_percentage = self.full_covered_tiles / self.tile_count * 100 if self.tile_count > 0 else 0
+            full_coverage_text = self.font.render("Full Tile-Coverage: " + str(int(full_coverage_percentage)) + "%", True, RED)
+            self.screen.blit(full_coverage_text, (20, 60))
 
     def draw_time(self):
         if conf["debug"]["draw_time"] and self.run_mode == Runmode.SIM:
             time = self.font.render("Time: " + str(self.ticks), True, RED)
-            self.screen.blit(time, (20, 60))
+            self.screen.blit(time, (20, 80))
 
     def draw(self):
         dirt = conf["simulation"].get("dirt", 35)
