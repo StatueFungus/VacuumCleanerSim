@@ -2,6 +2,7 @@ import os
 from time import strftime, gmtime
 
 import pygame
+import sys
 from pygame.locals import *
 
 from events.EventType import EventType
@@ -47,6 +48,7 @@ class Visualizer:
         self.tile_count = 0
         self.covered_tiles = 0
         self.full_covered_tiles = 0
+        self.stats = []
 
         # --- Temp rectangle for placing new rectangles ---
         self.mouse_down = False
@@ -73,6 +75,12 @@ class Visualizer:
         if self.run_mode == Runmode.SIM:
             if self.ticks % 1000 == 0:
                 self.save_screenshot()
+                self.save_stats()
+
+            if self.get_full_coverage_percentage() >= conf["simulation"].get("stop_at_coverage", 20):
+                self.save_screenshot()
+                log.info("stop simulation")
+                sys.exit()
 
             self.ticks = self.ticks + 1
 
@@ -152,13 +160,19 @@ class Visualizer:
 
     def draw_coverage(self):
         if conf["debug"]["draw_coverage"]:
-            coverage_percentage = self.covered_tiles / self.tile_count * 100 if self.tile_count > 0 else 0
+            coverage_percentage = self.get_coverage_percentage()
             coverage_text = self.font.render("Tile-Coverage: " + str(int(coverage_percentage)) + "%", True, RED)
             self.screen.blit(coverage_text, (20, 40))
 
-            full_coverage_percentage = self.full_covered_tiles / self.tile_count * 100 if self.tile_count > 0 else 0
+            full_coverage_percentage = self.get_full_coverage_percentage()
             full_coverage_text = self.font.render("Full Tile-Coverage: " + str(int(full_coverage_percentage)) + "%", True, RED)
             self.screen.blit(full_coverage_text, (20, 60))
+
+    def get_full_coverage_percentage(self):
+        return self.full_covered_tiles / self.tile_count * 100 if self.tile_count > 0 else 0
+
+    def get_coverage_percentage(self):
+        return self.covered_tiles / self.tile_count * 100 if self.tile_count > 0 else 0
 
     def draw_time(self):
         if conf["debug"]["draw_time"] and self.run_mode == Runmode.SIM:
@@ -197,3 +211,6 @@ class Visualizer:
 
         filename = "output/" + str(self.time) + "/" + str(self.ticks) + ".png"
         pygame.image.save(self.screen, filename)
+
+    def save_stats(self):
+        self.stats.append([self.ticks, self.get_coverage_percentage(), self.get_full_coverage_percentage()])
