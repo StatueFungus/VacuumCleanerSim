@@ -28,8 +28,8 @@ class SpiralWalkAlgorithm(AbstractCleaningAlgorithm):
             self.rotation_speed = 5
             return [ConfigurationChanged(rss=self.rotation_speed)]
 
-        if self.mode == Mode.SPIRAL and 180 <= robot.angle <= 180 + self.rotation_speed or 0 <= robot.angle <= self.rotation_speed:
-            self.rotation_speed = self.rotation_speed / 1.1
+        if self.mode == Mode.SPIRAL and (180 <= robot.angle <= 180 + self.rotation_speed or 0 <= robot.angle <= self.rotation_speed):
+            self.rotation_speed = self.rotation_speed / 1.05
             return [ConfigurationChanged(rss=self.rotation_speed)]
 
         if self.mode == Mode.RANDOM_WALK and not robot.busy and self.robot_colided(obstacles, robot):

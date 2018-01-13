@@ -3,7 +3,7 @@
     "tile_size": 10,
     "width": 800,
     "height": 600,
-    "dirt": 35,
+    "dirt": 20,
     "defaults": {
       "1": { "obstacles": [[488, 10, 302, 318], [10, 327, 209, 263]], "robot": [703, 516, 30] },
       "2": { "obstacles": [[361, 10, 76, 462]], "robot": [694, 501, 30] }
@@ -13,7 +13,7 @@
     "radius": 30,
     "wss": 2,
     "rss": 5,
-    "dirt_per_cover": 7
+    "dirt_per_cover": 10
   },
   "simulation": {
     "fps": 60,
