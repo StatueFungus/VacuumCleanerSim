@@ -64,6 +64,7 @@ class VacuumCleanerSim:
     def handle_pygame_events(self, events):
         for event in events:
             if event.type == pygame.QUIT:
+                self.visualizer.exit()
                 sys.exit()
             if event.type == KEYDOWN and event.key == K_c:
                 log.info("Clear obstacles")
