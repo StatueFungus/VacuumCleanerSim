@@ -77,6 +77,7 @@ class VacuumCleanerSim:
                     self.visualizer.set_tile_count(self.environment.get_tile_count())
                     log.info("Switched run mode to simulation")
             elif event.type == KEYDOWN and event.key == K_ESCAPE:
+                self.visualizer.exit()
                 sys.exit()
 
     def get_algorithm_name(self):

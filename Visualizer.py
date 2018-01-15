@@ -74,8 +74,12 @@ class Visualizer:
             self.handle_pygame_events(pygame_events)
 
         if self.run_mode == Runmode.SIM:
-            if self.ticks % 1000 == 0:
+            ticks_per_screenshot = conf["simulation"].get("ticks_per_screenshot", 1000)
+            if self.ticks % ticks_per_screenshot == 0:
                 self.save_screenshot()
+
+            ticks_per_save= conf["simulation"].get("ticks_per_save", 500)
+            if self.ticks % ticks_per_save == 0:
                 self.save_stats()
 
             if self.get_full_coverage_percentage() >= conf["simulation"].get("stop_at_coverage", 90):
