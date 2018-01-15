@@ -19,7 +19,8 @@
     "fps": 60,
     "default_algorithm": "random",
     "ticks_for_cover": 10,
-    "dirt": 50
+    "dirt": 50,
+    "stop_at_coverage": 90
   },
   "debug": {
     "draw_fps": true,

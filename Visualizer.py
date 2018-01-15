@@ -1,3 +1,4 @@
+import csv
 import os
 from time import strftime, gmtime
 
@@ -77,8 +78,10 @@ class Visualizer:
                 self.save_screenshot()
                 self.save_stats()
 
-            if self.get_full_coverage_percentage() >= conf["simulation"].get("stop_at_coverage", 20):
+            if self.get_full_coverage_percentage() >= conf["simulation"].get("stop_at_coverage", 90):
                 self.save_screenshot()
+                self.save_stats()
+                self.export_stats()
                 log.info("stop simulation")
                 sys.exit()
 
@@ -214,3 +217,9 @@ class Visualizer:
 
     def save_stats(self):
         self.stats.append([self.ticks, self.get_coverage_percentage(), self.get_full_coverage_percentage()])
+
+    def export_stats(self):
+        filename = "output/" + str(self.time) + "/results.csv"
+        with open(filename, 'w') as file:
+            wr = csv.writer(file, quoting=csv.QUOTE_NONNUMERIC)
+            wr.writerows(self.stats)
