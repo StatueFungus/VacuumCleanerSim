@@ -21,7 +21,7 @@
     "default_algorithm": "random",
     "ticks_for_cover": 10,
     "dirt": 50,
-    "stop_at_coverage": 90,
+    "stop_at_coverage": 85,
     "ticks_per_screenshot": 1000,
     "ticks_per_save": 500
   },

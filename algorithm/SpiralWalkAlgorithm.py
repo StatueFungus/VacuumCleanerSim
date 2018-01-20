@@ -13,15 +13,23 @@ class SpiralWalkAlgorithm(AbstractCleaningAlgorithm):
         self.count = 0
         self.last_config_change = -1
         self.mode = Mode.SPIRAL
+        self.steps_for_mode_switch = 500
 
     def update(self, obstacles, robot):
-
-        self.count = self.count + 1
 
         if not self.started:
             self.start()
             robot.state = RobotState.WALK_ROTATE
             robot.custom_rss = 5
+
+        if self.mode == Mode.RANDOM_WALK:
+            self.count = self.count + 1
+
+            if self.count > self.steps_for_mode_switch:
+                self.mode = Mode.SPIRAL
+                new_state = RobotState.WALK_ROTATE
+                self.steps_for_mode_switch = self.steps_for_mode_switch * 2
+                return [ConfigurationChanged(new_state=new_state, rss=self.rotation_speed)]
 
         if self.mode == Mode.SPIRAL and self.robot_colided(obstacles, robot):
             self.mode = Mode.RANDOM_WALK

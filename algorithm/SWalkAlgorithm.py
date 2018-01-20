@@ -1,4 +1,5 @@
 from enum import Enum
+from random import randint
 
 from algorithm.AbstractCleaningAlgorithm import AbstractCleaningAlgorithm
 from events.ConfigurationChanged import ConfigurationChanged
@@ -11,6 +12,7 @@ class SWalkAlgorithm(AbstractCleaningAlgorithm):
         self.state = State.WALK_LINE
         self.steps_between_lines = 0
         self.rotate_clockwise = False
+        self.collision_after_direction_change = False
 
     def update(self, obstacles, robot):
         super().update(obstacles, robot)
@@ -21,6 +23,10 @@ class SWalkAlgorithm(AbstractCleaningAlgorithm):
             if not robot.busy and self.robot_colided(obstacles, robot):
                 new_state = RobotState.WALK_BACKWARDS_THEN_ROTATE
                 delta_angle = self._get_current_angle()
+                if self.collision_after_direction_change:
+                    if randint(0, 1):
+                        delta_angle = delta_angle * -1
+                    self.collision_after_direction_change = False
                 configuration_events.append(ConfigurationChanged(new_state=new_state, delta_angle=delta_angle))
                 self.state = State.MOVE_TO_NEXT_LINE
             return configuration_events
@@ -31,10 +37,13 @@ class SWalkAlgorithm(AbstractCleaningAlgorithm):
 
             if self.robot_colided(obstacles, robot):
                 new_state = RobotState.WALK_BACKWARDS_THEN_ROTATE
-                delta_angle = self._get_current_angle()
+                delta_angle = 180
                 configuration_events.append(ConfigurationChanged(new_state=new_state, delta_angle=delta_angle))
+                self.steps_between_lines = 0
+                self.state = State.WALK_LINE
+                self.collision_after_direction_change = True
 
-            if self.steps_between_lines >= 7:
+            if self.steps_between_lines >= 7 :
                 new_state = RobotState.ROTATE
                 delta_angle = self._get_current_angle()
                 configuration_events.append(ConfigurationChanged(new_state=new_state, delta_angle=delta_angle))

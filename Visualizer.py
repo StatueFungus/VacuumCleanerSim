@@ -225,8 +225,9 @@ class Visualizer:
             wr.writerows(self.stats)
 
     def exit(self):
-        self.save_screenshot()
-        self.save_stats()
-        self.export_stats()
-        log.info("stop simulation")
+        if self.run_mode == Runmode.SIM:
+            self.save_screenshot()
+            self.save_stats()
+            self.export_stats()
+            log.info("stop simulation")
         sys.exit()
