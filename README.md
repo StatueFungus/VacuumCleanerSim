@@ -3,7 +3,7 @@
 VacuumCleanerSim is a simulation software for coverage problems in planar environments.
 It was originally developed as part of a college project at Hochschule Darmstadt in semester 2017 / 2018.
 The simulation allows developers to build arbitrary environments based on rectangular obstacles.
-There is a simple possibility to develop new algorithms and run it with the simulator.
+There is a simple possibility to develop new algorithms and run them with the simulator.
 
 ## Installation
 
