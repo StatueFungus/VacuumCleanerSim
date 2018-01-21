@@ -13,7 +13,7 @@ There are some dependencies for this project to install. Just run `pip install` 
 
 ## Run the simulation
 
-To start the simulation you can run the following command
+To start the simulation you can run the following command:
 ```
 python VacuumCleanerSim.py [<algorithm>] [<environment>]
 ```
@@ -27,15 +27,15 @@ Additionally there are some predefined environments that can be configured in th
 
 ## Usage
 
-After you start the software, you are in the "build" phase. The you can draw some obstacles and place the vacuum robot.
+After you start the software, you are in the "build" phase. There you can draw some obstacles and place the vacuum robot.
 
-To use the software you need to know some key assignment:
+To use the software you need to know some key assignments:
 
 * `R` - places the robot at the position of your mouse cursor
 * `M` - switch the mode to the "simulation" phase. Only possible if there is a robot placed in the environment.
 * `P` - toggle display of the coverage path
 * `ESC` - exits the software
 
-The result of the simulation will be a folder under /output. There will be all saved screenshots simulation and a csv-file that contains all data of the simulation.
+The result of the simulation will be a folder under /output. There will appear all saved screenshots and a csv-file that contains all data of the simulation.
 
 
