@@ -12,9 +12,10 @@
     <option name="ADD_SOURCE_ROOTS" value="true" />
     <module name="VacuumCleanerSim" />
     <option name="SCRIPT_NAME" value="$PROJECT_DIR$/VacuumCleanerSim.py" />
-    <option name="PARAMETERS" value="spiral" />
+    <option name="PARAMETERS" value="spiral 9" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <option name="EMULATE_TERMINAL" value="false" />
+    <option name="MODULE_MODE" value="false" />
     <method />
   </configuration>
 </component>

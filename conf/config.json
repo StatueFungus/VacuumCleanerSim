@@ -13,9 +13,8 @@
       "5": { "obstacles": [[10, 10, 365, 95], [380, 252, 410, 337], [381, 220, 23, 41]], "robot": [29, 503, 30], "name":"hummerkorb-falle" },
       "6": { "obstacles": [[361, 10, 76, 462]], "robot": [580, 270, 30], "name":"narrow passage" },
       "7": { "obstacles": [[10, 420, 447, 170], [10, 10, 165, 43], [611, 10, 179, 58], [10, 252, 86, 171]], "name":"normal room" },
-      "8": { "obstacles": [[10, 420, 447, 170], [10, 10, 165, 43], [611, 10, 179, 58], [10, 252, 86, 171]], "robot": [730, 501, 30], "name":"normal room" }
-
-
+      "8": { "obstacles": [[10, 420, 447, 170], [10, 10, 165, 43], [611, 10, 179, 58], [10, 252, 86, 171]], "robot": [730, 501, 30], "name":"normal room" },
+      "9": { "obstacles": [], "robot": [385, 285, 30], "name":"random spiral" }
     }
   },
   "robot":{
@@ -25,7 +24,7 @@
     "dirt_per_cover": 10
   },
   "simulation": {
-    "fps": 60,
+    "fps": 500,
     "default_algorithm": "random",
     "ticks_for_cover": 10,
     "dirt": 50,

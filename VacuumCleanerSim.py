@@ -1,3 +1,5 @@
+import random
+
 import pygame
 import sys
 
@@ -97,4 +99,5 @@ class VacuumCleanerSim:
 
 
 if __name__ == '__main__':
+    random.seed(1)
     VacuumCleanerSim().start_simulation()
