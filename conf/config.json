@@ -1,13 +1,12 @@
 {
   "environment": {
     "tile_size": 10,
-    "width": 800,
+    "width": 1200,
     "height": 600,
-    "dirt": 20,
     "defaults": {
       "0": { "obstacles": [], "robot": [] },
-      "1": { "obstacles": [[488, 10, 302, 318], [10, 327, 209, 263]], "robot": [703, 516, 30] },
-      "2": { "obstacles": [[361, 10, 76, 462]], "robot": [730, 501, 30], "name":"narrow passage" },
+      "1": { "obstacles": [[490, 10, 300, 320], [10, 330, 210, 260]], "robot": [700, 520, 30] },
+      "2": { "obstacles": [[360, 10, 80, 460]], "robot": [730, 500, 30], "name":"narrow passage" },
       "3": { "obstacles": [[233, 10, 157, 247], [503, 493, 137, 97]], "robot": [699, 512, 30] },
       "4": { "obstacles": [[389, 296, 401, 294]], "robot": [28, 511, 30] },
       "5": { "obstacles": [[10, 10, 365, 95], [380, 252, 410, 337], [381, 220, 23, 41]], "robot": [29, 503, 30], "name":"hummerkorb-falle" },
